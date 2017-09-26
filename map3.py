@@ -1,0 +1,41 @@
+import folium
+import pandas
+import time
+
+start = time.time()
+
+data = pandas.read_csv("Volcanoes_USA.txt")
+
+lat = list(data["LAT"])
+lon = list(data["LON"])
+elev = list(data["ELEV"])
+
+
+def color_producer(elevation):
+    if elevation < 1000:
+        return "green"
+    elif 1000 <= elevation < 3000:
+        return "orange"
+    else:
+        return "red"
+
+
+map_1 = folium.Map(location=[42.39, -117.43], zoom_start=5, tiles="Mapbox Bright")
+
+fg = folium.FeatureGroup(name="My MAP")
+
+for lt, ln, el in zip(lat, lon, elev):
+    fg.add_child(folium.CircleMarker(location=(lt, ln),
+                                     radius=5,
+                                     popup=folium.Popup(str(el) + " m", parse_html=True),
+                                     fill_color=color_producer(el),
+                                     color = color_producer(el),
+                                     fill = True,
+                                     fill_opacity = 0.7))
+map_1.add_child(fg)
+
+map_1.save("Map_3.html")
+
+stop = time.time()
+finished_in = (stop - start)
+print(finished_in)
